@@ -1,0 +1,91 @@
+---
+title: "exercice 1"
+author: "Bethlehem MESSELU"
+format: html
+---
+
+```{r}
+#| echo=FALSE,message=FALSE
+
+here::i_am("dplyr-homework.Rproj")
+library(here)
+```
+
+```{r}
+#| echo=FALSE,message=FALSE
+spotify <- readRDS("top-spotify-songs-from-20102019-by-year.Rds")
+```
+```{r}
+#| echo=FALSE,message=FALSE
+
+library(dplyr)
+```
+## Question 1 
+
+```{r}
+#| echo=FALSE,message=FALSE
+
+n_song <- spotify %>% distinct(title)
+n_artist <- spotify %>% distinct(title, .keep_all=T) %>% distinct(artist) 
+n_genre <- spotify %>% distinct(`top genre`) 
+```
+The dataset contains `r nrow(n_song)` songs, `r nrow(n_artist)` artists and `r nrow(n_genre)` genres. 
+
+## Question 2
+```{r table artist per year}
+#| echo=FALSE,message=FALSE
+
+knitr::kable(spotify %>% distinct(title, .keep_all=T) %>% group_by(year) %>% summarise("number of songs"= n()), caption= "number of songs in the top spotify over years")
+```
+## Question 3
+
+```{r}
+#| echo=FALSE,message=FALSE
+
+max_artist <- spotify %>% distinct(title, .keep_all=T) %>% group_by(artist) %>% summarise(N=n()) %>% slice_max(order_by=N, n=1)
+```
+The artist with the greatest number of songs in the top 2010-2019 spotify hits is `r max_artist[1,1] `.
+
+## Question 4
+
+```{r bpm stats}
+#| echo=FALSE,message=FALSE
+
+knitr::kable(spotify %>% distinct(title, .keep_all=T) %>% summarise("minimum" = min(bpm), "maximum" = max(bpm), "mean"= mean(bpm), "median" = median(bpm)), caption = "statistics of the bpm variable")
+```
+
+## Question 5
+
+```{r table energy and danceability}
+#| echo=FALSE,message=FALSE
+
+knitr::kable(spotify %>% distinct(title, artist, .keep_all=T) %>% group_by(year) %>% summarise("energy" = median(nrgy), "danceability"= median(dnce)), caption ="evolution of the energy and danceability average over years")
+```
+## Question 6
+```{r}
+#| echo=FALSE,message=FALSE
+
+library(tidyr)
+```
+
+```{r}
+#| echo=FALSE,message=FALSE
+
+bspotify <- spotify %>% distinct(title, artist, .keep_all=T) %>% group_by(year) %>% summarise("median of energy" = median(nrgy), "median of danceability"= median(dnce))
+```
+```{r}
+#| echo=FALSE,message=FALSE
+
+library(ggplot2)
+```
+```{r}
+#| echo=FALSE,message=FALSE
+
+bspotify_long <- bspotify %>% pivot_longer(-year, names_to= "median", values_to = "Values")
+```
+
+```{r graph energy and danceability}
+#| echo=FALSE,message=FALSE
+
+ggplot(bspotify_long, aes(x= year, y= Values, color=median )) + geom_line() +  ggtitle("evolution of energy and danceability over years")
+```

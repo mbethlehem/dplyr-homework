@@ -1,0 +1,50 @@
+---
+title: "Exercice 2"
+author: "Bethlehem MESSELU"
+format: html
+---
+
+```{r}
+#| echo=FALSE,message=FALSE
+
+dropout <- readRDS("dropout.Rds")
+```
+```{r}
+#| echo=FALSE,message=FALSE
+
+library(dplyr)
+```
+## Question 1
+
+```{r table age at enrollment}
+#| echo=FALSE,message=FALSE
+
+knitr::kable(dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`)), caption= "median of Age at enrollment conditioned on marital status and Gender")
+```
+## Question 2
+```{r}
+#| echo=FALSE,message=FALSE
+
+library(tidyr)
+```
+```{r table age at enrollment wider}
+#| echo=FALSE,message=FALSE
+
+knitr::kable((dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`)) %>% pivot_wider(values_from = `median of Age at enrollment`, names_from = Gender)))
+```
+
+## Question 3
+
+```{r curricular conditioned on Target}
+#| echo=FALSE,message=FALSE
+
+curri_gender <- dropout %>% select(starts_with("Curricular units"), Target)
+knitr::kable(curri_gender %>%  group_by(Target) %>% summarise(round(across(starts_with("Curricular units"), mean), 2)), caption= "median of Curriculat units conditioned on Target")
+```
+## Question 4
+```{r curricular transpose}
+#| echo=FALSE,message=FALSE
+
+knitr::kable(curri_gender %>%  group_by(Target) %>% summarise(round(across(starts_with("Curricular units"), mean), 2))%>% pivot_longer(cols = -Target) %>%
+pivot_wider(names_from = Target, values_from = value) %>% rename("Units" = name)) 
+```
