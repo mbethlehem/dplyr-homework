@@ -19,7 +19,7 @@ library(dplyr)
 ```{r table age at enrollment}
 #| echo=FALSE,message=FALSE
 
-knitr::kable(dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`)), caption= "median of Age at enrollment conditioned on marital status and Gender")
+knitr::kable(dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`), .groups = 'drop'), caption= "median of Age at enrollment conditioned on marital status and Gender")
 ```
 ## Question 2
 ```{r}
@@ -30,7 +30,7 @@ library(tidyr)
 ```{r table age at enrollment wider}
 #| echo=FALSE,message=FALSE
 
-knitr::kable((dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`)) %>% pivot_wider(values_from = `median of Age at enrollment`, names_from = Gender)))
+knitr::kable((dropout %>% group_by(`Marital status`, Gender) %>% summarise("median of Age at enrollment"= median(`Age at enrollment`), .groups = 'drop') %>% pivot_wider(values_from = `median of Age at enrollment`, names_from = Gender)))
 ```
 
 ## Question 3
